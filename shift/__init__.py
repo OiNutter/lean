@@ -3,11 +3,11 @@ import re
 
 class Shift(object):
 
-	preferred_mappings = {}
-	template_mappings = {}
+  preferred_mappings = {}
+  template_mappings = {}
 
-	@staticmethod
-	def register(template_class,*extensions):
+  @staticmethod
+  def register(template_class,*extensions):
 		''' Register a template for a given extension or range of extensions '''
 		for ext in extensions:
 			ext = normalize(ext)
@@ -15,111 +15,119 @@ class Shift(object):
 				Shift.template_mappings[ext] = []
 
 			Shift.template_mappings[ext].insert(0,template_class)
-			Shift.template_mappings[ext] = unique(Shift.template_mappings['ext'])
+			Shift.template_mappings[ext] = unique(Shift.template_mappings[ext])
 
-	@staticmethod
-	def prefer(template_class,*extensions):
-		''' Makes a template class preferred for the given file extensions. If you
-  			don't provide any extensions, it will be preferred for all its already
-  			registered extensions:
- 			
-  			# Prefer Markdown for its registered file extensions:
-  			Shift.prefer(MarkdownTemplate)
-  			
-  			# Prefer Markdown only for the .md extensions:
-  			Shift.prefer(MarkdownTemplate, '.md') 
-  		'''
-  		
-  		if len(extensions):
-  			for (ext,klasses) in Shift.template_mappings.items():
-  				Shift.preferred_mappings[ext] = template_class if klasses.count(template_class)
-  		else:
-  			for ext in extensions:
-  				ext = normalize(ext)
-  				Shift.register(template_class,ext)
-  				Shift.preferred_mappings[ext] = template_class
+  @staticmethod
+  def prefer(template_class,*extensions):
+    ''' Makes a template class preferred for the given file extensions. If you
+        don't provide any extensions, it will be preferred for all its already
+        registered extensions:
+      
+        # Prefer Markdown for its registered file extensions:
+        Shift.prefer(MarkdownTemplate)
+        
+        # Prefer Markdown only for the .md elxtensions:
+        Shift.prefer(MarkdownTemplate, '.md')
+    '''
 
-  	@staticmethod
-  	def is_registered(ext):
-  		''' Returns true when a template exists on an exact match of the provided file extension '''
-  		return Shift.template_mappings.has_key(ext.lowercase()) and len(Shift.template_mappings[ext])
+    if len(extensions):
+      for (ext,klasses) in Shift.template_mappings.items():
+        if klasses.count(template_class):
+          Shift.preferred_mappings[ext] = template_class
+    else:
+      for ext in extensions:
+        ext = normalize(ext)
+        Shift.register(template_class,ext)
+        Shift.preferred_mappings[ext] = template_class
 
-  	def __init__(self,file,line=None,options={},block=None):
-  		''' Create a new template for the given file using the file's extension
-  			to determine the the template mapping.
-  		'''
+  @staticmethod
+  def is_registered(ext):
+    ''' Returns true when a template exists on an exact match of the provided file extension '''
+    return Shift.template_mappings.has_key(ext.lower()) and len(Shift.template_mappings[ext])
 
-  		if template_class = self.[file]:
-  			template_class(file,line,options,block)
-  		else:
-  			raise LookupError('No template engine registered for ' + os.path.basename(file))
+  @staticmethod
+  def load(file,line=None,options={},block=None):
+    ''' Create a new template for the given file using the file's extension
+        to determine the the template mapping.
+    '''
 
-  	def [](self,file):
-  		''' Lookup a template class for the given filename or file
-  			extension. Return nil when no implementation is found.
-  		'''
-  		pattern = str(file).lowercase()
-  		while len(pattern) and not Shift.is_registered(pattern):
-  			pattern = os.path.basename(pattern)
-  			pattern.sub(r'^[^.]*\.?','')
+    template_class = Shift.get_template(file)
+    if template_class:
+      return template_class(file,line,options,block)
+    else:
+      raise LookupError('No template engine registered for ' + os.path.basename(file))
 
-  		# Try to find a preferred engine.
-  		preferred_klass = Shift.preferred_mappings[pattern]
+  @staticmethod
+  def get_template(file):
+    ''' Lookup a template class for the given filename or file
+        extension. Return nil when no implementation is found.
+    '''
 
-  		if preferred_klass:
-  			return preferred_klass
+    pattern = str(file).lower()
+    while len(pattern) and not Shift.is_registered(pattern):
+      pattern = os.path.basename(pattern)
+      pattern = re.sub(r'^[^.]*\.?','',pattern)
 
-  		# Fall back to the general list of mappings
-  		klasses = Shift.template_mappings[pattern]
+  	# Try to find a preferred engine.
+    preferred_klass = Shift.preferred_mappings[pattern] if Shift.preferred_mappings.has_key(pattern) else None
 
-  		# Try to find an engine which is already loaded
-  		template = None
-  		for klass in klasses:
-  			if has_attr(klass,'is_engine_initialized') and callable(klass,'is_engine_initialized'):
-  				if klass.is_engine_initialized():
-  					template = klass
-  					break
+    if preferred_klass:
+  		return preferred_klass
 
-  		if template:
-  			return template
+  	# Fall back to the general list of mappings
+    klasses = Shift.template_mappings[pattern]
 
-  		# Try each of the classes until one succeeds. If all of them fails,
-    	# we'll raise the error of the first class.
-    	first_failure = None
+  	# Try to find an engine which is already loaded
+    template = None
+    for klass in klasses:
+  		if hasattr(klass,'is_engine_initialized') and callable(klass.is_engine_initialized):
+  			if klass.is_engine_initialized():
+  				template = klass
+  				break
 
-    	for klass in klasses:
-    		try:
-    			klass()
-    			return klass
-    		except Exception,e:
-    			first_failure ||= e
+ 		if template:
+ 			return template
 
-    	if first_failure:
-    		raise first_failure
+ 		# Try each of the classes until one succeeds. If all of them fails,
+   	# we'll raise the error of the first class.
+    first_failure = None
+
+    for klass in klasses:
+      try:
+        return klass
+      except Exception, e:
+        if not first_failure:
+          first_failure = e
+
+   	if first_failure:
+   		raise Exception(first_failure)
 
 class Cache(object):
-	''' Extremely simple template cache implementation. Calling applications
-  		create a Tilt::Cache instance and use #fetch with any set of hashable
-  		arguments (such as those to Tilt.new):
-  		cache = shift.Cache()
-  		cache.fetch([path, line, options],Shift.new(path, line, options))
-  		
-  		Subsequent invocations return the already loaded template object.
-  	'''
+  ''' Extremely simple template cache implementation. Calling applications
+      create a Tilt::Cache instance and use #fetch with any set of hashable
+      arguments (such as those to Tilt.new):
+      cache = shift.Cache()
+      cache.fetch([path, line, options],Shift.new(path, line, options))
+      
+      Subsequent invocations return the already loaded template object.
+  '''
 
-	def __init__(self):
-		self.cache = {}
+  def __init__(self):
+    self.cache = {}
 
-	def fetch(self,key,yield):
-		return self.cache[key] ||= yield
+  def fetch(self,key,result):
+    if not self.cache.has_key(key) or not self.cache[key]:
+  		self.cache[key] = result
 
-	def clear(self):
+    return self.cache[key]
+
+  def clear(self):
 		self.cache = {}
 
 # Util Methods
 def normalize(ext):
 	''' Normalise file extensions'''
-	return str(ext).lowercase().sub(r'^\.','')
+	return re.sub(r'^\.','',str(ext).lower())
 
 def unique(seq):
 	''' Removes duplicate elements from a List'''
@@ -135,8 +143,8 @@ def unique(seq):
 from coffee import CoffeeScriptTemplate
 Shift.register(CoffeeScriptTemplate,'coffee')
 
-from css import ScssTemplate
-Shift.register(ScssTemplate,'scss')
+#from css import ScssTemplate
+#Shift.register(ScssTemplate,'scss')
 
-from markdown import MarkdownTemplate
-Shift.register(MarkdownTemplate,'markdown','mkd','md')
+#from markdown import MarkdownTemplate
+#Shift.register(MarkdownTemplate,'markdown','mkd','md')
