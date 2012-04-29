@@ -8,5 +8,5 @@ setup(name='shift',
 	  packages=['shift'],
 	  package_dir={'shift': '<skeleton_project'},
       package_data={},
-      requires:[]
+      requires:['coffeescript','pyScss']
 	  )

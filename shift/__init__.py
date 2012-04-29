@@ -143,8 +143,8 @@ def unique(seq):
 from coffee import CoffeeScriptTemplate
 Shift.register(CoffeeScriptTemplate,'coffee')
 
-#from css import ScssTemplate
-#Shift.register(ScssTemplate,'scss')
+from css import ScssTemplate
+Shift.register(ScssTemplate,'scss')
 
 #from markdown import MarkdownTemplate
 #Shift.register(MarkdownTemplate,'markdown','mkd','md')
