@@ -94,7 +94,6 @@ class Template(object):
     		
     		Subclasses must provide an implementation of this method.
 		'''
-    	#raise NotImplementedError("You Must Implement This In A Subclass")
     	pass
 
 	def evaluate(self,scope,locals,block=None):
@@ -108,92 +107,3 @@ class Template(object):
 		method = self.compiled_method(locals.keys())
 		setattr(self,'compiled',method.__get__(self,self.__class__))
 		return self.compiled()
-
-	#def precompiled(self,locals):
-	#	''' Generates all template source by combining the preamble, template, and
-    #		postamble and returns a two-tuple of the form: [source, offset], where
-    #		source is the string containing (Ruby) source code for the template and
-    #		offset is the integer line offset where line reporting should begin.
-    #		
-    #		Template subclasses may override this method when they need complete
-    #		control over source generation or want to adjust the default line
-    #		offset. In most cases, overriding the #precompiled_template method is
-    #		easier and more appropriate.
-	#	'''
-    #	preamble = self.precompiled_preamble(locals)
-    # 	template = self.precompiled_template(locals)
-    #  	magic_comment = self.extract_magic_comment(template)
-    #  	if magic_comment:
-    #    	# Magic comment e.g. "# coding: utf-8" has to be in the first line.
-    #    	# So we copy the magic comment to the first line.
-    #    	preamble = magic_comment + "\\n" + preamble
-    #  	
-    #  	parts = [
- 	#       	preamble,
-    #    	template,
-    #    	precompiled_postamble(locals)
-    #  	]
-      
-    #  	return [parts.join("\n"), preamble.count("\n") + 1]
-
-	#def precompiled_template(self,locals):
-	#	''' A string containing the (Ruby) source code for the template. The
-    # 		default Template#evaluate implementation requires either this method
-    #		or the #precompiled method be overridden. When defined, the base
-    # 		Template guarantees correct file/line handling, locals support, custom
-    # 		scopes, and support for template compilation when the scope object
-    #		allows it.
-    #	'''
-    #  	raise NotImplementedError()
-
-	#def precompiled_preamble(self,locals):
-	#	''' Generates preamble code for initializing template state, and performing
-    #		locals assignment. The default implementation performs locals
-    #		assignment only. Lines included in the preamble are subtracted from the
-    #		source line offset, so adding code to the preamble does not effect line
-    #		reporting in Kernel::caller and backtraces.
-    #	''' 
-    #	return map( lambda k,v: k = locals[k]).join("\n")
-
-	#def precompiled_postamble(self,locals):
-	#	''' Generates postamble code for the precompiled template source. The
-    #		string returned from this method is appended to the precompiled
-    #		template source.
-	#	'''
-    #	return ''
-
-	#def compiled_method(self,locals_keys):
-	#	''' The compiled method for the locals keys provided. '''
-	#	if not self.compiled_method.has_key(locals_keys) or not self.compiled_method[locals_keys]:
-	#		self.compiled_method[locals_keys] = self.compile_template_method(locals_keys)
-    #	return self.compiled_method[locals_keys]
-
-    # def compile_template_method(locals):
-    #  source, offset = precompiled(locals)
-    #  method_name = "__tilt_#{Thread.current.object_id.abs}"
-    #  method_source = <<-RUBY
-    #    #{extract_magic_comment source}
-    #    TOPOBJECT.class_eval do
-    #      def #{method_name}(locals)
-    #        Thread.current[:tilt_vars] = [self, locals]
-    #        class << self
-    #          this, locals = Thread.current[:tilt_vars]
-    #          this.instance_eval do
-    #  RUBY
-    #  offset += method_source.count("\n")
-    #  method_source << source
-    #  method_source << "\nend;end;end;end"
-    #  Object.class_eval method_source, eval_file, line - offset
-    #  unbind_compiled_method(method_name)
-
-    # def unbind_compiled_method(self,method_name):
-    #  method = TOPOBJECT.instance_method(method_name)
-    #  TOPOBJECT.class_eval { remove_method(method_name) }
-    #  method
-
-    # def extract_magic_comment(self,script):
-    #  comment = script.slice(/\A[ \t]*\#.*coding\s*[=:]\s*([[:alnum:]\-_]+).*$/)
-    #  if comment && !%w[ascii-8bit binary].include?($1.):
-    #    return comment
-    #  elif self.default_encoding:
-    #    return "# coding: %s" % self.default_encoding
