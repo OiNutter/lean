@@ -7,6 +7,5 @@ setup(name='Shift',
       author_email='will@oinutter.co.uk',
       packages=['shift'],
       package_dir={'shift': 'shift'},
-      package_data={},
-      requires=['coffeescript','pyScss']
+      package_data={}
       )
