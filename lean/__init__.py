@@ -1,7 +1,7 @@
 import os
 import re
 
-class Shift(object):
+class Lean(object):
 
   preferred_mappings = {}
   template_mappings = {}
@@ -11,11 +11,11 @@ class Shift(object):
 		''' Register a template for a given extension or range of extensions '''
 		for ext in extensions:
 			ext = normalize(ext)
-			if not Shift.template_mappings.has_key(ext):
-				Shift.template_mappings[ext] = []
+			if not Lean.template_mappings.has_key(ext):
+				Lean.template_mappings[ext] = []
 
-			Shift.template_mappings[ext].insert(0,template_class)
-			Shift.template_mappings[ext] = unique(Shift.template_mappings[ext])
+			Lean.template_mappings[ext].insert(0,template_class)
+			Lean.template_mappings[ext] = unique(Lean.template_mappings[ext])
 
   @staticmethod
   def prefer(template_class,*extensions):
@@ -24,26 +24,26 @@ class Shift(object):
         registered extensions:
       
         # Prefer Markdown for its registered file extensions:
-        Shift.prefer(MarkdownTemplate)
+        Lean.prefer(MarkdownTemplate)
         
         # Prefer Markdown only for the .md elxtensions:
-        Shift.prefer(MarkdownTemplate, '.md')
+        Lean.prefer(MarkdownTemplate, '.md')
     '''
 
     if len(extensions):
-      for (ext,klasses) in Shift.template_mappings.items():
+      for (ext,klasses) in Lean.template_mappings.items():
         if klasses.count(template_class):
-          Shift.preferred_mappings[ext] = template_class
+          Lean.preferred_mappings[ext] = template_class
     else:
       for ext in extensions:
         ext = normalize(ext)
-        Shift.register(template_class,ext)
-        Shift.preferred_mappings[ext] = template_class
+        Lean.register(template_class,ext)
+        Lean.preferred_mappings[ext] = template_class
 
   @staticmethod
   def is_registered(ext):
     ''' Returns true when a template exists on an exact match of the provided file extension '''
-    return Shift.template_mappings.has_key(ext.lower()) and len(Shift.template_mappings[ext])
+    return Lean.template_mappings.has_key(ext.lower()) and len(Lean.template_mappings[ext])
 
   @staticmethod
   def load(file,line=None,options={},block=None):
@@ -51,7 +51,7 @@ class Shift(object):
         to determine the the template mapping.
     '''
 
-    template_class = Shift.get_template(file)
+    template_class = Lean.get_template(file)
     if template_class:
       return template_class(file,line,options,block)
     else:
@@ -64,18 +64,18 @@ class Shift(object):
     '''
 
     pattern = str(file).lower()
-    while len(pattern) and not Shift.is_registered(pattern):
+    while len(pattern) and not Lean.is_registered(pattern):
       pattern = os.path.basename(pattern)
       pattern = re.sub(r'^[^.]*\.?','',pattern)
 
   	# Try to find a preferred engine.
-    preferred_klass = Shift.preferred_mappings[pattern] if Shift.preferred_mappings.has_key(pattern) else None
+    preferred_klass = Lean.preferred_mappings[pattern] if Lean.preferred_mappings.has_key(pattern) else None
 
     if preferred_klass:
   		return preferred_klass
 
   	# Fall back to the general list of mappings
-    klasses = Shift.template_mappings[pattern]
+    klasses = Lean.template_mappings[pattern]
 
   	# Try to find an engine which is already loaded
     template = None
@@ -106,8 +106,8 @@ class Cache(object):
   ''' Extremely simple template cache implementation. Calling applications
       create a Tilt::Cache instance and use #fetch with any set of hashable
       arguments (such as those to Tilt.new):
-      cache = shift.Cache()
-      cache.fetch([path, line, options],Shift.new(path, line, options))
+      cache = Lean.Cache()
+      cache.fetch([path, line, options],Lean.new(path, line, options))
       
       Subsequent invocations return the already loaded template object.
   '''
@@ -141,10 +141,10 @@ def unique(seq):
 ##############################
 
 from coffee import CoffeeScriptTemplate
-Shift.register(CoffeeScriptTemplate,'coffee')
+Lean.register(CoffeeScriptTemplate,'coffee')
 
 from css import ScssTemplate
-Shift.register(ScssTemplate,'scss')
+Lean.register(ScssTemplate,'scss')
 
 #from markdown import MarkdownTemplate
-#Shift.register(MarkdownTemplate,'markdown','mkd','md')
+#Lean.register(MarkdownTemplate,'markdown','mkd','md')
