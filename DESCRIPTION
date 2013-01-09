@@ -13,12 +13,18 @@ understand how it works and how to do it in Python.
 If you want to get involved and help add support for other templating
 languages then please, get stuck in!
 
+Installation
+------------
+
+::
+	pip install lean
+
 Basic Usage
 -----------
 
 ::
 
-    from Lean import Lean
+    from lean import Lean
 
     tmpl = Lean.load('blah.coffee')
     tmpl.render()

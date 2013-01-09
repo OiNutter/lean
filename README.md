@@ -7,11 +7,18 @@ At the moment it just has support for CoffeeScript and Scss as those are what I 
 
 If you want to get involved and help add support for other templating languages then please, get stuck in!
 
+Installation
+------------
+
+```bash
+$ pip install lean
+```
+
 Basic Usage
 -----------
 
 ```python
-from Lean import Lean
+from lean import Lean
 
 tmpl = Lean.load('blah.coffee')
 tmpl.render()
