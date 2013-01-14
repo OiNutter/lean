@@ -1,17 +1,16 @@
 from distutils.core import setup
-import pandoc
+import os
 
-pandoc.core.PANDOC_PATH = "pandoc"
-
-doc = pandoc.Document()
-doc.markdown = open('README.md','r').read()
+long_description = "Generic interface to multiple Python template engines - Tilt for Python"
+if os.path.exists('README.txt'):
+      long_description = open('README.txt').read()
 
 setup(name='Lean',
-      version='0.2',
+      version='0.2.1',
       url='https://github.com/OiNutter/lean',
       download_url='https://github.com/OiNutter/lean/tarball/master',
       description='Generic interface to multiple Python template engines - Tilt for Python',
-      long_description=doc.rst,
+      long_description=long_description,
       author='Will McKenzie',
       author_email='will@oinutter.co.uk',
       packages=['lean'],
