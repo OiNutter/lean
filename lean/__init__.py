@@ -140,11 +140,21 @@ def unique(seq):
 ## Template Implementations ##
 ##############################
 
-from coffee import CoffeeScriptTemplate
+from _coffee import CoffeeScriptTemplate
 Lean.register(CoffeeScriptTemplate,'coffee')
 
-from css import ScssTemplate
+from _css import ScssTemplate
 Lean.register(ScssTemplate,'scss')
+
+from _jinja import JinjaTemplate
+Lean.register(JinjaTemplate,'jinja')
+
+from _mustache import MustacheTemplate
+Lean.register(MustacheTemplate,'mustache')
+Lean.register(MustacheTemplate,'pystache')
+
+from _mako import MakoTemplate
+Lean.register(MakoTemplate,'mako')
 
 #from markdown import MarkdownTemplate
 #Lean.register(MarkdownTemplate,'markdown','mkd','md')
