@@ -24,10 +24,10 @@ class Template(object):
     # been called yet.
 	engine_initialized = False
 
-	@staticmethod
+	@classmethod
 	@abc.abstractmethod
-	def is_engine_initialized():
-		return Template.engine_initialized
+	def is_engine_initialized(cls):
+		return cls.engine_initialized
    
 	def __init__(self,file=None,line=1,options={},block=None):
 		''' Create a new template with the file, line, and options specified. By
@@ -48,7 +48,7 @@ class Template(object):
       	# an instance of this class has been created.
 		if not self.is_engine_initialized():
 			self.initialize_engine()
-			Template.engine_initialized = True
+			self.__class__.engine_initialized = True
 
 		# used to hold compiled template methods
 		self.compiled_methods = {}
@@ -60,12 +60,12 @@ class Template(object):
 		self.data = self.reader(self)
 		return self.prepare()
 
-	def render(self,scope=object(),locals={},block=None):
+	def render(self,scope=None,local_vars=None,block=None):
 		''' Render the template in the given scope with the locals specified. If a
     		block is given, it is typically available within the template via
     		+yield+.
     	'''
-		return self.evaluate(scope, locals if locals else {}, block)
+		return self.evaluate(scope or {}, local_vars or {}, block)
 
 	def basename(self, suffix=''):
 		''' The basename of the template file.'''
@@ -86,7 +86,6 @@ class Template(object):
 		'''
 		return
 
-	@abc.abstractmethod
 	def prepare(self):
 		''' Do whatever preparation is necessary to setup the underlying template
     		engine. Called immediately after template data is loaded. Instance
@@ -94,7 +93,7 @@ class Template(object):
     		
     		Subclasses must provide an implementation of this method.
 		'''
-    	pass
+		raise NotImplementedError
 
 	def evaluate(self,scope,locals,block=None):
 		''' Execute the compiled template and return the result string. Template
@@ -107,3 +106,29 @@ class Template(object):
 		method = self.compiled_method(locals.keys())
 		setattr(self,'compiled',method.__get__(self,self.__class__))
 		return self.compiled()
+
+	#def precompiled(self,local_vars):
+	#	preamble = self.precompiled_preamble(local_vars)
+	#	template = self.precompiled_template(local_vars)
+	#	magic_comment = self.extract_magic_comment(template)
+	#	if magic_comment:
+	#		preamble = magic_comment + "\n" + preamble
+
+	#	parts = [
+	#			preamble,
+	#			template,
+	#			self.precompiled_postamble(local_vars)
+	#		]
+
+	#	return ['\n'.join(parts),preamble.count('\n')+1]
+
+	#def precompiled_template(self,local_vars):
+	#	raise NotImplementedError
+
+	#def precompiled_preamble(self,local_vars):
+
+	#	preamble = []
+	#	for key,value in local_vars.iteritems():
+	#		preamble.append("%s = locals")
+
+
