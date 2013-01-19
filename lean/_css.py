@@ -1,5 +1,4 @@
 from template import Template
-from scss import Scss
 
 class ScssTemplate(Template):
    	
@@ -8,6 +7,10 @@ class ScssTemplate(Template):
    	@staticmethod
 	def is_engine_initialized():
 		return 'Scss' in globals()
+
+	def initialize_engine(self):
+		global Scss
+		from scss import Scss
 
 	def prepare(self):
 		self._options['filename'] = self.eval_file

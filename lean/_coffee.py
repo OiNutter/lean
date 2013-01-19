@@ -1,5 +1,4 @@
 from template import Template
-import coffeescript
 
 class CoffeeScriptTemplate(Template):
 
@@ -10,6 +9,10 @@ class CoffeeScriptTemplate(Template):
 	@staticmethod
 	def is_engine_initialized():
 		return 'coffeescript' in globals()
+
+	def initialize_engine(self):
+		global coffeescript
+		import coffeescript
 
 	def prepare(self):
 		if not self._options.has_key('bare') and not self._options.has_key('no_wrap'):
