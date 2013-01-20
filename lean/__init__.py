@@ -156,5 +156,9 @@ Lean.register(MustacheTemplate,'pystache')
 from _mako import MakoTemplate
 Lean.register(MakoTemplate,'mako')
 
+from _string import StringTemplate
+Lean.register(StringTemplate,'str')
+Lean.register(StringTemplate,'string')
+
 #from markdown import MarkdownTemplate
 #Lean.register(MarkdownTemplate,'markdown','mkd','md')
