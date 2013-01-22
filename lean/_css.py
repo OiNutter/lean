@@ -13,11 +13,16 @@ class ScssTemplate(Template):
 		from scss import Scss
 
 	def prepare(self):
-		self._options['filename'] = self.eval_file
-		self._options['line'] = self._line
-		self._options['syntax'] = 'scss'
+		self.engine = Scss(scss_opts=self.sass_options())
 
-		self.engine = Scss(scss_opts=self._options)
+	def sass_options(self):
+		options = self._options
+		options.update({
+			'filename': self.eval_file(),
+			'line': self._line,
+			'syntax':'scss'
+		})
+		return options
 
 	def evaluate(self,scope, locals, block=None):
 		if not hasattr(self,'output') or not self.output:
