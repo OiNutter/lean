@@ -6,7 +6,7 @@ if os.path.exists('README.txt'):
       long_description = open('README.txt').read()
 
 setup(name='Lean',
-      version='0.2.2',
+      version='0.2.3',
       url='https://github.com/OiNutter/lean',
       download_url='https://github.com/OiNutter/lean/tarball/master',
       description='Generic interface to multiple Python template engines - Tilt for Python',
