@@ -162,7 +162,6 @@ class Template(object):
 			import string
 			tmpl = string.Template(source)
 			code = tmpl.safe_substitute(local_vars)
-			print code
 			return eval(code,local_vars or {},self)
 
 		return compiled_function
