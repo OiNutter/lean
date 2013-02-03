@@ -4,7 +4,7 @@ import re
 class StringTemplate(Template):
 
 	def prepare(self):
-		self.code = "'{data}'".format(data='\n'.join(self.data.splitlines()))
+		self.code = "'''{data}'''".format(data=self.data)
 
 	def precompiled_template(self,local_vars):
 		return self.code
