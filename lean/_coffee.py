@@ -20,7 +20,7 @@ class CoffeeScriptTemplate(Template):
 
 	def evaluate(self,scope, locals, block=None):
 		if not hasattr(self,'output') or not self.output:
-			self.output = coffeescript.compile(self.data, self._options)
+			self.output = coffeescript.compile(self.data, **self._options)
 
 		return self.output
 
