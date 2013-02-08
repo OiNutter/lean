@@ -1,7 +1,6 @@
 import io
 import os
 import abc
-import threading
 import re
 
 class Template(object):
